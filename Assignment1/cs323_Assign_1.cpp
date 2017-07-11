@@ -39,10 +39,14 @@ int main() {
   // Use regex to match a string against the section RE
   string result;
   try {
-    std::regex re("name=(.*)");
+    std::regex re("\\[(\\w+)\\]\\s+((\\w+)=(\\w+)\\s+)+");  // "name=(.*)"
     std::smatch match;
     if (std::regex_search(subject, match, re) && match.size() > 1) {
-      result = match.str(1);
+			cout << "SECTION \t" << match.str(1);
+			cout << "\nPROPERTY \t" << match.str(3);
+			cout << "\nVALUE \t\t"  << match.str(4);      
+			result = match.str(0);
+			//cout << match.size();   //Check the amount of strings returned
     } else {
       result = "";
     }
@@ -54,8 +58,8 @@ int main() {
   // 
 
   // Print results
-  cout << "Result: " << result << "\n\n";
-
+  cout << "\n\nResult: \n" << result << "\n\n";
+	
   // Close the file
   inFile.close();
 
