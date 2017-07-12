@@ -5,6 +5,8 @@
 using namespace std;
 // Luis Gonzalez
 
+bool getKey(string buf);
+
 int main() {
   // Define a variable to read in a .ini file
   ifstream inFile;
@@ -21,7 +23,7 @@ int main() {
     // The file was successfully opened
     cout << "File opened successfully.\n\n";
   }
-
+/*
   // Scan the contents of the .ini file
   char next;
   string subject = "";
@@ -35,39 +37,57 @@ int main() {
 
   // Skip a couple lines
   cout << "\n\n";
+*/
 
+	string buf = "";
+
+	do {
+		getline(inFile, buf);
+		cout << buf << endl;
+		
+		getKey(buf);
+		} while(!inFile.eof());
   // Use regex to match a string against the section RE
-  string result;
-  try {
-    std::regex re("((\\[[^/[]+))+");//\\w+\\]\\s*(\\w+)=(\\w+)\\s*)");  // "name=(.*)"
-    std::smatch match;
-    if (std::regex_search(subject, match, re) && match.size() > 1) {
-			//cout << "SECTION \t" << match.str(1);
-			//cout << "\nPROPERTY \t" << match.str(3);
-			//cout << "\nVALUE \t\t"  << match.str(4);      
-			cout << match.str(0) << "\n";
-			//cout << match.str(1) << "\n";
-			//cout << match.str(2) << "\n";
-			//cout << match.str(3) << "\n";
-			//cout << match.str(4);			
-			result = match.str(0);
-			cout << "\n\n" << match.size() << "\n\n";   //Check the amount of strings returned
-    } else {
-      result = "";
-    }
-  } catch (std::regex_error& e) {
-    // Syntax error in the RE
-    cout << "Error.\n";
-  }
-
-  // 
-
-  // Print results
-  cout << "\n\nResult: \n" << result << "\n\n";
-	
+ 
   // Close the file
   inFile.close();
 
 
   return 0;
 }
+
+bool getKey(string buf)
+{
+	bool		retVal = false;
+  string secStr;
+	string propStr;
+	string	valStr;
+  try {
+    std::regex sec(R"(\[([^\]]+))");
+		std::regex prop(R"((\w+)=(\w+))");
+	
+    std::smatch match;
+    if (std::regex_search(buf, match, sec) && match.size() > 1) {
+			secStr = match.str(1);
+			cout << "\nSECTION: " << secStr << endl;   //Check the amount of strings returned
+			    
+		} 
+
+
+		else if(std::regex_search(buf, match, prop) && match.size() > 1) {
+      propStr = match.str(1);
+			valStr = match.str(2);
+			cout << "\nPROPERTY: "<< propStr << endl;    
+			cout << "\nVALUE: " << valStr << endl;		
+		}
+  } catch (std::regex_error& e) {
+    // Syntax error in the RE
+    cout << "Error.\n";
+  }
+	
+
+
+
+	return retVal;
+}
+
