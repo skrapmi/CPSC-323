@@ -103,21 +103,26 @@ bool getKey(string keyBuf)
 	string	    valStr;
     
     try {
-        // regular expression for section
-        regex sec(R"(\[(\w+)\])");  //(R"(\[([^\]]+))"); 
+        // regular expression for comment
+        regex com(R"(([#;]))");  //(R"(\[([^\]]+))"); 
 		
+        // regular expression for section
+        regex sec(R"(\[(\w+)\])");
+
         // regular expression for property and value
         regex prop(R"((\w+)=(\w+))");
 	
         smatch match;
+        smatch comMatch;
 
-        if (regex_search(keyBuf, match, sec) && match.size() > 1) {
+        if (regex_search(keyBuf, match, sec) && !regex_search(keyBuf, comMatch, com)) {
 			secStr = match.str(1);
 			cout << "\nSECTION: " << secStr << endl;
+            cout << "matches: " << match.size() << endl;
             retVal = true;			    
 		    } 
 
-		else if(regex_search(keyBuf, match, prop) && match.size() > 1) {
+		else if(regex_search(keyBuf, match, prop) && !regex_search(keyBuf, comMatch, com)) {
             propStr = match.str(1);
 			valStr = match.str(2);
 			cout << "PROPERTY : "<< propStr << endl;    
