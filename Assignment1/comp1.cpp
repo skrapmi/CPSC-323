@@ -2,44 +2,51 @@
 #include <fstream>
 #include <cstdlib>
 #include <regex>
+#include "inifile.h"
+
 using namespace std;
 
-
-bool getKey(string buf);
-
-int main() 
+IniFile::IniFile(std::string filename)
 {
-    ifstream    inFile; // Define a variable to read in a .ini file
-    string      buf;
-    
-    // Read in a .ini file
-    inFile.open("test.ini");
+	ifstream    inFile; // Define a variable to read in a .ini file
+  string      buf;
+  
+  // Read in a .ini file
+  inFile.open("test.ini");
 
-    // Check that the file was opened successfully
-    if (inFile.fail( )) {
-        // Print an error message
-        cout << "Error opening file.\n\n";
-        exit(1);
-        } 
-    
-    else {
-        // The file was successfully opened
-        cout << "File opened successfully.\n\n";
-        }
-    
+  // Check that the file was opened successfully
+  if (inFile.fail( )) {
+      // Print an error message
+      cout << "Error opening file.\n\n";
+      exit(1);
+      } 
+  
+  else {
+      // The file was successfully opened
+      cout << "File opened successfully.\n\n";
+      }
+  
 
 	do {
 		getline(inFile, buf);
 		//cout << buf << endl;
-		
+	
 		getKey(buf);
-		} while(!inFile.eof());
+	} while(!inFile.eof());
  
-    // Close the file
-    inFile.close();
-  
-    return 0;
+	// Close the file
+	inFile.close();
+
+  return 0;
 }
+
+string IniFile::GetProfileString(std::string section, std::string property_name)
+{
+	return " ";
+}
+
+bool getKey(string buf);
+
 
 bool getKey(string keyBuf)
 {
