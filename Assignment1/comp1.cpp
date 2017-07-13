@@ -20,9 +20,9 @@ using namespace std;
 
 
 // Member function prototypes
-IniFile::IniFile();
-IniFile::IniFile(std::string filename);
-string IniFile::GetProfileString(string section, string property_name);
+//IniFile::IniFile();
+//IniFile::IniFile(std::string filename);
+//string IniFile::GetProfileString(string section, string property_name);
 bool getKey(string keyBuf);
 
 
@@ -49,7 +49,7 @@ IniFile::IniFile(std::string filename)
   string      buf;
   
   // Read in a .ini file
-  inFile.open("test.ini");
+  inFile.open(filename);
 
   // Check that the file was opened successfully
   if (inFile.fail( )) {
@@ -73,6 +73,10 @@ IniFile::IniFile(std::string filename)
  
 	// Close the file
 	inFile.close();
+<<<<<<< HEAD
+
+=======
+>>>>>>> a254dcfd6650d3e8b78ad8216bae5bc756b93f32
 }
 
 
@@ -93,10 +97,11 @@ string IniFile::GetProfileString(std::string section, std::string property_name)
  * Description: Uses regular expressions to retrieve specific tokens or     *
  *              sets of tokens from the INI file.                           *
  ***************************************************************************/
-bool getKey(string keyBuf)
+bool IniFile::getKey(string keyBuf)
 {
-    bool		retVal = false;
-    string      secStr;
+	std::map<char,int>::iterator it;
+  bool retVal = false;
+    
 	string      propStr;
 	string	    valStr;
     
@@ -126,6 +131,23 @@ bool getKey(string keyBuf)
 			cout << "PROPERTY : "<< propStr << endl;    
 			cout << "VALUE    : " << valStr << endl;		
 		    retVal = true;
+
+			it = map_data.find(secStr);
+			if(it != map_data.end())
+			{
+				data.clear();
+				data = map_data[secStr];
+				map_data.erase(secStr);
+				data[propStr] = valStr;
+				map_data[secStr] = data;
+			}
+			else
+			{
+				data.clear();
+				data[propStr] = valStr;
+				map_data[secStr] = data;
+			}
+
             }
         } 
     
@@ -147,4 +169,3 @@ IniFile::~IniFile() {
   // Destructor
   
 }
-
