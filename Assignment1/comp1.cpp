@@ -73,8 +73,6 @@ IniFile::IniFile(std::string filename)
  
 	// Close the file
 	inFile.close();
-
-  return 0;
 }
 
 
