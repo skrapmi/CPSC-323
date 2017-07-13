@@ -1,3 +1,13 @@
+/****************************************************************************
+ *                                                                          *
+ * Members: Tim, Luis, Stephen                                              *
+ * Class:   CS-323 Compilers                                                *
+ * Project: Scanning INI files                                              *
+ * Date:    July 12, 2017                                                   *
+ *                                                                          *
+ ***************************************************************************/
+
+
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
@@ -16,13 +26,20 @@ string IniFile::GetProfileString(string section, string property_name);
 bool getKey(string keyBuf);
 
 
+/****************************************************************************
+ * Member function: Default Constructor                                     *
+ * Parameters: none                                                         *
+ * Description: Default constructor (assists with memory allocation)        *
+ ***************************************************************************/
 IniFile::IniFile() {
   // Default constructor
+  
 }
 
 
 /*****************************************************************************
  * Member function: Overloaded Constructor                                   *
+ * Parameters: string filename                                               *
  * Description: Initializes an IniFile object by reading in the filename and *
  *              opening the .ini file. All tokens in the file are scanned.   *
  ****************************************************************************/
@@ -60,12 +77,24 @@ IniFile::IniFile(std::string filename)
   return 0;
 }
 
+
+/****************************************************************************
+ * Member function: GetProfileString                                        *
+ * Parameters: string section, string property_name                         *
+ * Description: Returns the value of the section and property.              *
+ ***************************************************************************/
 string IniFile::GetProfileString(std::string section, std::string property_name)
 {
 	return " ";
 }
 
 
+/****************************************************************************
+ * Local function: getKey                                                   *
+ * Parameters: string keyBuff                                               *
+ * Description: Uses regular expressions to retrieve specific tokens or     *
+ *              sets of tokens from the INI file.                           *
+ ***************************************************************************/
 bool getKey(string keyBuf)
 {
     bool		retVal = false;
@@ -106,7 +135,13 @@ bool getKey(string keyBuf)
 }
 
 
+/****************************************************************************
+ * Member function: Destructor                                              *
+ * Parameters: none                                                         *
+ * Description: Responsible for memory deallocation.                        *
+ ***************************************************************************/
 IniFile::~IniFile() {
   // Destructor
+  
 }
 
