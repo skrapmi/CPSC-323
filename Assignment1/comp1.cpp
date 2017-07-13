@@ -2,10 +2,30 @@
 #include <fstream>
 #include <cstdlib>
 #include <regex>
+#include <map>
 #include "inifile.h"
+
 
 using namespace std;
 
+
+// Member function prototypes
+IniFile::IniFile();
+IniFile::IniFile(std::string filename);
+string IniFile::GetProfileString(string section, string property_name);
+bool getKey(string keyBuf);
+
+
+IniFile::IniFile() {
+  // Default constructor
+}
+
+
+/*****************************************************************************
+ * Member function: Overloaded Constructor                                   *
+ * Description: Initializes an IniFile object by reading in the filename and *
+ *              opening the .ini file. All tokens in the file are scanned.   *
+ ****************************************************************************/
 IniFile::IniFile(std::string filename)
 {
 	ifstream    inFile; // Define a variable to read in a .ini file
@@ -45,8 +65,6 @@ string IniFile::GetProfileString(std::string section, std::string property_name)
 	return " ";
 }
 
-bool getKey(string buf);
-
 
 bool getKey(string keyBuf)
 {
@@ -85,5 +103,10 @@ bool getKey(string keyBuf)
             }
 	
 	return retVal;
+}
+
+
+IniFile::~IniFile() {
+  // Destructor
 }
 

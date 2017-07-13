@@ -10,8 +10,14 @@
 class IniFile
 {
  public:
+  // Default Constructor
+  IniFile();
+  // Overloaded Constructor
   IniFile(std::string filename);
   std::string GetProfileString(std::string section, std::string property_name);
+
+  // Destructor
+  ~IniFile();
 };
 
 
