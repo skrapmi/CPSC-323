@@ -73,14 +73,7 @@ IniFile::IniFile(std::string filename)
  
 	// Close the file
 	inFile.close();
-<<<<<<< HEAD
 
-=======
-<<<<<<< HEAD
-
-=======
->>>>>>> a254dcfd6650d3e8b78ad8216bae5bc756b93f32
->>>>>>> 78c0c2b1b53719e3cc53d4270ff2c629f8cc2bed
 }
 
 
@@ -138,13 +131,7 @@ bool IniFile::getKey(string keyBuf)
 
 			it = map_data.find(secStr);
 
-			if(firstUse)
-			{
-				data[propStr] = valStr;
-				map_data[secStr] = data;
-				firstUse = false;
-			}
-			if(it != map_data.end() && !firstUse)
+			if(it != map_data.end())
 			{
 				data.clear();
 				data = map_data[secStr];
@@ -152,7 +139,7 @@ bool IniFile::getKey(string keyBuf)
 				data[propStr] = valStr;
 				map_data[secStr] = data;
 			}
-			else if(!firstUse)
+			else
 			{
 				data.clear();
 				data[propStr] = valStr;
