@@ -74,8 +74,7 @@ IniFile::IniFile(string filename)
     do {
         getline(inFile, buf);  
         // Begin try-catch block
-        try {
-            
+        try {           
             sectionFound  = regex_search(buf, secMatch, sec);
             propertyFound = regex_search(buf, propMatch, prop); 
             commentNotFound  = !regex_search(buf, comMatch, com);
@@ -161,8 +160,8 @@ string IniFile::GetProfileString(string section, string property_name)
             while(data_it != data.end()) {
 	            if(data_it->first == property_name)
 	                return data_it->second;
-	                data_it++;
-                    }
+	            data_it++;
+                }
             }
         map_data_it++;
         }
