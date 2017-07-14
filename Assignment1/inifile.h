@@ -2,11 +2,22 @@
 #define INIFILE_H_
 
 
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <regex>
+
 class IniFile
 {
  public:
-  IniFile(string filename);
-  string GetProfileString(string section, string property_name);
+  // Default Constructor
+  IniFile();
+  // Overloaded Constructor
+  IniFile(std::string filename);
+  std::string GetProfileString(std::string section, std::string property_name);
+
+  // Destructor
+  ~IniFile();
 };
 
 

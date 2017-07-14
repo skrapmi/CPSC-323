@@ -2,44 +2,69 @@
 #include <fstream>
 #include <cstdlib>
 #include <regex>
+#include <map>
+#include "inifile.h"
+
+
 using namespace std;
 
 
-bool getKey(string buf);
+// Member function prototypes
+IniFile::IniFile();
+IniFile::IniFile(std::string filename);
+string IniFile::GetProfileString(string section, string property_name);
+bool getKey(string keyBuf);
 
-int main() 
+
+IniFile::IniFile() {
+  // Default constructor
+}
+
+
+/*****************************************************************************
+ * Member function: Overloaded Constructor                                   *
+ * Description: Initializes an IniFile object by reading in the filename and *
+ *              opening the .ini file. All tokens in the file are scanned.   *
+ ****************************************************************************/
+IniFile::IniFile(std::string filename)
 {
-    ifstream    inFile; // Define a variable to read in a .ini file
-    string      buf;
-    
-    // Read in a .ini file
-    inFile.open("test.ini");
+	ifstream    inFile; // Define a variable to read in a .ini file
+  string      buf;
+  
+  // Read in a .ini file
+  inFile.open("test.ini");
 
-    // Check that the file was opened successfully
-    if (inFile.fail( )) {
-        // Print an error message
-        cout << "Error opening file.\n\n";
-        exit(1);
-        } 
-    
-    else {
-        // The file was successfully opened
-        cout << "File opened successfully.\n\n";
-        }
-    
+  // Check that the file was opened successfully
+  if (inFile.fail( )) {
+      // Print an error message
+      cout << "Error opening file.\n\n";
+      exit(1);
+      } 
+  
+  else {
+      // The file was successfully opened
+      cout << "File opened successfully.\n\n";
+      }
+  
 
 	do {
 		getline(inFile, buf);
 		//cout << buf << endl;
-		
+	
 		getKey(buf);
-		} while(!inFile.eof());
+	} while(!inFile.eof());
  
-    // Close the file
-    inFile.close();
-  
-    return 0;
+	// Close the file
+	inFile.close();
+
+  return 0;
 }
+
+string IniFile::GetProfileString(std::string section, std::string property_name)
+{
+	return " ";
+}
+
 
 bool getKey(string keyBuf)
 {
@@ -78,5 +103,10 @@ bool getKey(string keyBuf)
             }
 	
 	return retVal;
+}
+
+
+IniFile::~IniFile() {
+  // Destructor
 }
 
