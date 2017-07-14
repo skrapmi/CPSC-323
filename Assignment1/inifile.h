@@ -8,10 +8,6 @@
 #include <regex>
 #include <map>
 
- struct propVal{
-                std::string  property = "";
-                std::string   value = "" ;
-		        };
 
 class IniFile
 {
@@ -25,13 +21,9 @@ class IniFile
   
 
 	private:
-		bool getKey(std::string keyBuf);
-       // propVal        data;
         std::map<std::string, std::string> data;	
-        //std::map< std::string,std::map<std::string,std::string> > map_data = {"", data};
        
         std::map< std::string, std::map<std::string, std::string>>  map_data;
-	//	std::string secStr;
 
 };
 
