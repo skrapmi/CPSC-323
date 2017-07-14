@@ -123,8 +123,7 @@ IniFile::IniFile(string filename)
         cout << "\n  SECTION: " << map_data_it->first << endl;
         data = map_data_it->second;
         data_it = data.begin();
-        while(data_it != data.end())
-	        {
+        while(data_it != data.end()) {
 	        cout << " Property: " << data_it->first << endl;
        	    cout << "    Value: " << data_it->second << endl;
 	        data_it++;
