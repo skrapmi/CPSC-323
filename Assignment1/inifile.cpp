@@ -118,7 +118,7 @@ IniFile::IniFile(string filename)
     // Set the map_data iterator to the beginning of the map
     map_data_it = map_data.begin();
 
-    cout << "\n ======MAP=========\n";
+    cout << "=======MAP=========\n";
     while(map_data_it != map_data.end()){
         cout << "\n  SECTION: " << map_data_it->first << endl;
         data = map_data_it->second;
@@ -131,7 +131,7 @@ IniFile::IniFile(string filename)
        	    }
         map_data_it++;
         }
-  
+    cout << "===================\n"; 
     // Close the file
     inFile.close();
 }
@@ -165,7 +165,7 @@ string IniFile::GetProfileString(string section, string property_name)
             }
         map_data_it++;
         }
-    return (secFound) ?  "Not a valid property of section: " + section 
+    return (secFound) ? "Not a valid property of section: " + section 
                       : "Section " + section + " not found";
 
 }
