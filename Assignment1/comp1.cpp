@@ -130,7 +130,13 @@ bool IniFile::getKey(string keyBuf)
 		    retVal = true;
 
 			it = map_data.find(secStr);
-			if(it != map_data.end())
+			if(firstUse)
+			{
+				data[propStr] = valStr;
+				map_data[secStr] = data;
+				firstUse = false;
+			}
+			if(it != map_data.end() && !firstUse)
 			{
 				data.clear();
 				data = map_data[secStr];
@@ -138,7 +144,7 @@ bool IniFile::getKey(string keyBuf)
 				data[propStr] = valStr;
 				map_data[secStr] = data;
 			}
-			else
+			else if(!firstUse)
 			{
 				data.clear();
 				data[propStr] = valStr;

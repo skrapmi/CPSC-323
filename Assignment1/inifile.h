@@ -25,6 +25,7 @@ class IniFile
 		std::map< std::string,std::map<std::string,std::string> > map_data;
 		std::map<std::string, std::string> data;
 		std::string secStr;
+    bool firstUse = true;
 
 };
 
