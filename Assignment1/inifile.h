@@ -11,20 +11,18 @@
 
 class IniFile
 {
-	
-	public:
-		
-		// Overloaded Constructor
-		IniFile(std::string filename);
-		std::string GetProfileString(std::string section, std::string property_name);
-		 // Destructor
-  
+ public:
+  // Custom Constructor
+  IniFile(std::string filename);
 
-	private:
-        std::map<std::string, std::string> data;	
-       
-        std::map< std::string, std::map<std::string, std::string>>  map_data;
+  // Member function
+  std::string GetProfileString(std::string section,
+			       std::string property_name);
 
+ private:
+  // Map objects
+  std::map<std::string, std::string> data;	
+  std::map< std::string, std::map<std::string, std::string>>  map_data;
 };
 
 
