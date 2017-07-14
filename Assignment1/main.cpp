@@ -11,7 +11,7 @@ using namespace std;
 // Begin main function
 int main(int argc, char *argv[0]) {
   // Used to store any filename passed as a command argument
-  std::string aFile;
+  string aFile;
 
   // Check for a command argument
   if (argc != 2) {
