@@ -104,8 +104,8 @@ IniFile::IniFile(std::string filename)
     while(it != map_data.end())
         {
         cout << "SECTION: " << it->first << endl;
-        it2 = data.begin();
-        while(it2 != data.end())
+        it2 = it->second.begin();
+        while(it2 != it->second.end())
             {
             cout << "Property: " << it2->first << endl;
             cout << "Value: " << it2->second << endl;
