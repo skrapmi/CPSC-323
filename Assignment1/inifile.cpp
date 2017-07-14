@@ -29,7 +29,7 @@ using namespace std;
  ****************************************************************************/
 IniFile::IniFile(std::string filename)
 {
-  // Define a variable to read in an INI file
+   // Define a variable to read in an INI file
   ifstream inFile;
   string buf;
 
@@ -55,24 +55,26 @@ IniFile::IniFile(std::string filename)
     cout << "File opened successfully.\n\n";
   }
 
+  // regular expression for comment
+  regex com(R"(([#;]))"); 
+		
+  // regular expression for section
+  regex sec(R"(\[(\w+)\])");
+
+  // regular expression for property and value
+  regex prop(R"((\w+)\s*=\s*(\w+))");
+
+  // Define smatch variables
+  smatch match;
+  smatch comMatch;   
+
+
   // Begin do-while loop
   do {
     getline(inFile, buf);
-
-    // Begin try-catch block
-    try {
-      // regular expression for comment
-      regex com(R"(([#;]))");  //(R"(\[([^\]]+))"); 
-		
-      // regular expression for section
-      regex sec(R"(\[(\w+)\])");
-
-      // regular expression for property and value
-      regex prop(R"((\w+)=(\w+))");
-
-      // Define smatch variables
-      smatch match;
-      smatch comMatch;
+  
+     // Begin try-catch block
+     try {
 	  // Checks for RE matching Section and ignors the rest
       if (regex_search(buf, match, sec) && !regex_search(buf, comMatch, com)) {
 		secStr = match.str(1);
@@ -119,8 +121,8 @@ IniFile::IniFile(std::string filename)
 	  data = map_data_it->second;
 	  data_it = data.begin();
 	  while(data_it != data.end())
-	{
-	  cout << " Property: " << data_it->first << endl;
+	    {
+	     cout << " Property: " << data_it->first << endl;
 		  cout << "    Value: " << data_it->second << endl;
 		  data_it++;
 		}
