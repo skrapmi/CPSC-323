@@ -23,18 +23,10 @@ using namespace std;
 //IniFile::IniFile();
 //IniFile::IniFile(std::string filename);
 //string IniFile::GetProfileString(string section, string property_name);
-bool getKey(string keyBuf);
+//bool getKey(string keyBuf);
 
 
-/****************************************************************************
- * Member function: Default Constructor                                     *
- * Parameters: none                                                         *
- * Description: Default constructor (assists with memory allocation)        *
- ***************************************************************************/
-IniFile::IniFile() {
-  // Default constructor
-  
-}
+
 
 
 /*****************************************************************************
@@ -47,7 +39,12 @@ IniFile::IniFile(std::string filename)
 {
 	ifstream    inFile; // Define a variable to read in a .ini file
   string      buf;
-  
+      std::map< std::string, std::map<std::string, std::string>>::iterator it;
+    std::map<std::string, std::string>::iterator it2;
+    
+    string      secStr;
+    string      propStr;
+	string	    valStr;
   // Read in a .ini file
   inFile.open(filename);
 
@@ -68,8 +65,65 @@ IniFile::IniFile(std::string filename)
 		getline(inFile, buf);
 		//cout << buf << endl;
 	
-		getKey(buf);
+		//getKey(buf);
+    try {
+        // regular expression for comment
+        regex com(R"(([#;]))");  //(R"(\[([^\]]+))"); 
+		
+        // regular expression for section
+        regex sec(R"(\[(\w+)\])");
+
+        // regular expression for property and value
+        regex prop(R"((\w+)=(\w+))");
+	
+        smatch match;
+        smatch comMatch;
+
+        if (regex_search(buf, match, sec) && !regex_search(buf, comMatch, com)) {
+			secStr = match.str(1);
+			//cout << "\nSECTION: " << secStr << endl;
+            //cout << "matches: " << match.size() << endl;
+             
+		    } 
+
+		else if(regex_search(buf, match, prop) && !regex_search(buf, comMatch, com)) {
+            propStr = match.str(1);
+			valStr = match.str(2);
+			//cout << "PROPERTY : "<< propStr << endl; 
+           // propFound.property = propStr;   
+           		
+            
+            //cout << "VALUE    : " << valStr << endl;		
+            data[propStr] = valStr;
+           
+             
+             map_data[secStr] = data;
+            }           
+        } 
+        
+    
+    catch (regex_error& e) {
+            // Syntax error in the RE
+            cout << "Error.\n";
+            }
+	
 	} while(!inFile.eof());
+
+    it = map_data.begin();
+     
+           cout << "\n ======MAP=========\n";
+            while(it != map_data.end())
+                {
+                cout << "SECTION: " << it->first << endl;
+                it2 = data.begin();
+                while(it2 != data.end())
+                    {
+                    cout << "Property: " << it2->first << endl;
+                    cout << "Value: " << it2->second << endl;
+                    it2++;
+                    }               
+                it++;
+                }
  
 	// Close the file
 	inFile.close();
@@ -96,74 +150,12 @@ string IniFile::GetProfileString(std::string section, std::string property_name)
  ***************************************************************************/
 bool IniFile::getKey(string keyBuf)
 {
-	std::map<char,int>::iterator it;
-  bool retVal = false;
-    
-	string      propStr;
-	string	    valStr;
-    
-    try {
-        // regular expression for comment
-        regex com(R"(([#;]))");  //(R"(\[([^\]]+))"); 
-		
-        // regular expression for section
-        regex sec(R"(\[(\w+)\])");
 
-        // regular expression for property and value
-        regex prop(R"((\w+)=(\w+))");
-	
-        smatch match;
-        smatch comMatch;
+  //  propVal     propFound;
 
-        if (regex_search(keyBuf, match, sec) && !regex_search(keyBuf, comMatch, com)) {
-			secStr = match.str(1);
-			cout << "\nSECTION: " << secStr << endl;
-            cout << "matches: " << match.size() << endl;
-            retVal = true;			    
-		    } 
 
-		else if(regex_search(keyBuf, match, prop) && !regex_search(keyBuf, comMatch, com)) {
-            propStr = match.str(1);
-			valStr = match.str(2);
-			cout << "PROPERTY : "<< propStr << endl;    
-			cout << "VALUE    : " << valStr << endl;		
-		    retVal = true;
-
-			it = map_data.find(secStr);
-
-			if(it != map_data.end())
-			{
-				data.clear();
-				data = map_data[secStr];
-				map_data.erase(secStr);
-				data[propStr] = valStr;
-				map_data[secStr] = data;
-			}
-			else
-			{
-				data.clear();
-				data[propStr] = valStr;
-				map_data[secStr] = data;
-			}
-
-            }
-        } 
-    
-    catch (regex_error& e) {
-            // Syntax error in the RE
-            cout << "Error.\n";
-            }
-	
-	return retVal;
+	return true;
 }
 
 
-/****************************************************************************
- * Member function: Destructor                                              *
- * Parameters: none                                                         *
- * Description: Responsible for memory deallocation.                        *
- ***************************************************************************/
-IniFile::~IniFile() {
-  // Destructor
-  
-}
+

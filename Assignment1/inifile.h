@@ -8,23 +8,30 @@
 #include <regex>
 #include <map>
 
+ struct propVal{
+                std::string  property = "";
+                std::string   value = "" ;
+		        };
+
 class IniFile
 {
 	
 	public:
-		// Default Constructor
-		IniFile();
+		
 		// Overloaded Constructor
 		IniFile(std::string filename);
 		std::string GetProfileString(std::string section, std::string property_name);
 		 // Destructor
-  	~IniFile();
+  
 
 	private:
 		bool getKey(std::string keyBuf);
-		std::map< std::string,std::map<std::string,std::string> > map_data = {"",""};
-		std::map<std::string, std::string> data = {"",""};
-		std::string secStr;
+       // propVal        data;
+        std::map<std::string, std::string> data;	
+        //std::map< std::string,std::map<std::string,std::string> > map_data = {"", data};
+       
+        std::map< std::string, std::map<std::string, std::string>>  map_data;
+	//	std::string secStr;
 
 };
 
