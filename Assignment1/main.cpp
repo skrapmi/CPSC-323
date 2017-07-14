@@ -14,7 +14,10 @@ int main() {
   IniFile stuff("test.ini");
 
   // Extract elements from the INI file
-  cout << stuff.GetProfileString("foo", "bar");
+	cout << stuff.GetProfileString("foo", "bar") << endl;
+  cout << stuff.GetProfileString("foo2", "shift") << endl;
+	cout << stuff.GetProfileString("second", "shift") << endl;
+	cout << stuff.GetProfileString("second", "bar") << endl;
 
   return 0;
 }
