@@ -4,7 +4,7 @@ Stephen Cordasco
 
 Assignment 1: Scanning INI Files
 
-Files: inifile.h cleanMap.cpp prog.cpp
+Files: inifile.h inifile.cpp main.cpp
 
 Description: This program reads in INI files and opens the file if
              it exists or prints an error message if the file was not
