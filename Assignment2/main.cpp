@@ -45,17 +45,55 @@ int main(int argc, char *argv[0]) {
 
 	regex	objectRE("");
 	regex 	arrayRE("");
-	
-	cmatch	fileTypeMatch;
+	regex   jLineRE(R"("(("\w+")\s*:\s* (\w+),)");
+	regex   jIntRE(R"("\d+")");
+
+    cmatch	fileTypeMatch;
+    cmatch  jLineMatch;
+    cmatch  jValMatch;
+    cmatch  jIntMatch;
+
+    string  jsonID;
+    string   jsonVal;
 
 	bool	isObjectOrArray;
-	
+	bool    isValidLine;
+
+/*
 	if(isObjectOrObject = true) //reg_search(buf, fileTypeMatch, objectRE)
 		{
 		JsonObject* 	jObject = new JsonObject();
 		} 
 	else if (isObjectOrObjec = false){
 		}
+*/
+
+    do {
+        getline(inFile, buf);
+        
+        if(regex_search(buf, jLineMatch, jLineRE))
+            {
+            jsonID = jLineMatch.str(1);
+            jsonVal = jLineMatch.str(2);
+
+            cout << "ID: " << jsonID << endl;
+            cout << "VAL: " << jsonVal << endl;
+            }
+
+        else {
+            cout << "Not a valid line! \n";
+            }
+        
+        if (regex_search(jsonVal, jIntMatch, jIntRE)) {
+            int i = stoi(jsonVal);
+
+            cout << "Valid Int " << i << " matched! \n";
+            //jObject->Add(jsonID, new JsonNmber(i));
+            }
+
+                 
+                
+        } while (!inFile.eof());
 		
 	
 	return 0;
