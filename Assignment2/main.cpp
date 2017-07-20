@@ -10,39 +10,53 @@
 #include <iostream>
 #include <fstream>
 #include "ast.h"
-
+#include <regex>
 
 using namespace std;
 
 
 int main(int argc, char *argv[0]) {
-  // Declare a string variable to store a filename
-  std::string aFile;
+  	// Declare a string variable to store a filename
+  	std::string aFile;
+	string		buf;	
+  	// Declare a variable to read in a JSON file
+  	ifstream inFile;
 
-  // Declare a variable to read in a JSON file
-  ifstream inFile;
+  	// Check for a command line argument
+  	if (argc != 2) {
+    	cout << "usage: " << argv[0] << " <filename>\n";
+  		} else {
+    	// store the command argument as the filename
+    	aFile = argv[1];
+  		}
 
-  // Check for a command line argument
-  if (argc != 2) {
-    cout << "usage: " << argv[0] << " <filename>\n";
-  } else {
-    // store the command argument as the filename
-    aFile = argv[1];
-  }
+  	// Read in a .json file
+  	inFile.open(aFile);
 
-  // Read in a .json file
-  inFile.open(aFile);
+  	// Check that the file name was opened successfully
+  	if (inFile.fail( )) {
+    	// Print an error message
+    	cout << "Error opening file.\n\n";
+    	exit(1);
+  		} else {
+    	// The file was successfully opened
+    	cout << "File opened successfully.\n\n";
+  		}
 
-  // Check that the file name was opened successfully
-  if (inFile.fail( )) {
-    // Print an error message
-    cout << "Error opening file.\n\n";
-    exit(1);
-  } else {
-    // The file was successfully opened
-    cout << "File opened successfully.\n\n";
-  }
+	regex	objectRE("");
+	regex 	arrayRE("");
+	
+	cmatch	fileTypeMatch;
 
-
-return 0;
+	bool	isObjectOrArray;
+	
+	if(isObjectOrObject = true) //reg_search(buf, fileTypeMatch, objectRE)
+		{
+		JsonObject* 	jObject = new JsonObject();
+		} 
+	else if (isObjectOrObjec = false){
+		}
+		
+	
+	return 0;
 }
