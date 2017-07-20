@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Assignment 2
 
 psuedo code! 
@@ -67,3 +68,11 @@ do {
 	// at this point a valid data type, including Identifier and 
 	// value has been added to an Object or Array
 	} while (!inFile.eof() // end of while
+=======
+Assignment 2 : JSON Parser
+Members: Tim, Luis, Stephen
+
+Description:
+
+Instructions:
+>>>>>>> 3cf2457ade873d266b6aa07dba9163c0df514f12

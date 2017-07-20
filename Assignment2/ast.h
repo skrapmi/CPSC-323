@@ -1,6 +1,11 @@
 #ifndef AST_H_
 #define AST_H_
 
+
+#include <list>
+#include <map>
+
+
 class JsonValue
 {
     public:
@@ -10,17 +15,17 @@ class JsonValue
 class JsonObject : public JsonValue
 {
     private:
-        map<string, JsonValue*> pairs;
+        std::map<std::string, JsonValue*> pairs;
 
     public:
         virtual void Print();
-        void Add(string name, JsonValue* value);
+        void Add(std::string name, JsonValue* value);
 };
 
 class JsonArray : public JsonValue
 {
     private:
-        list<JsonValue*> values;
+        std::list<JsonValue*> values;
 
     public:
         virtual void Print();
@@ -30,10 +35,10 @@ class JsonArray : public JsonValue
 class JsonString : public JsonValue
 {
     private:
-        string value;
+        std::string value;
 
     public:
-        JsonString(string s) : value(s) { };
+        JsonString(std::string s) : value(s) { };
         virtual void Print();
 };
 
