@@ -17,15 +17,14 @@
 
 using namespace std;
 
-//JsonObject::JsonObject(){} 
+
 
 void JsonObject::Add(std::string name, JsonValue* value){
-
+	pairs.insert(name, value);
 }
 
 void JsonArray::Add(JsonValue *v){
-
-
+	values.insert(v);
 }
 
 //virtual void JsonObject::Print(){};
