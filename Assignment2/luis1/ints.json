@@ -1,6 +1,10 @@
 {
+    "isDope" : false,    
     "index" : 54,
     "count" : 32,
     "year" : 1989,
 
+    "name" : "Luis",
+    "isBool" : true,
+    "nothing" : null, 
 }

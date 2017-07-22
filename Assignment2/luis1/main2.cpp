@@ -45,49 +45,86 @@ int main(int argc, char *argv[0]) {
 
 	regex	objectRE("");
 	regex 	arrayRE("");
-	regex   jLineRE(R"(\x22(\w+)\x22\s*: (.*))");
-	regex   jIntRE(R"(\d+)");
+    regex   emptyRE(R"(^\s*$)");
+	regex   jLineRE(R"(\x22(\w+)\x22\s*: ([^,]*),)");
+	regex   jIntRE(R"(\s*(\d+),?)");	
+    regex   jStrRE(R"(\s*\x22(\w+)\x22\s*,?)");
+    regex   jBoolorNullRE(R"(\s*(\w+),?)");
 
+   
     smatch	fileTypeMatch;
     smatch  jLineMatch;
-    smatch  jValMatch;
-    smatch  jIntMatch;
 
+    smatch  jValMatch;
+    
     string  jsonID;
-    string   jsonVal;
+    string  jsonVal;
+   
+  
+    int     jInt;
+    string  jStr;
+    bool    jBool;
+    string  jNull = "null";    
 
 	bool	isObjectOrArray;
 	bool    isValidLine;
-    		JsonObject* 	
-    jObject = new JsonObject();
+    		
+    JsonObject* 	jObject = new JsonObject();
 
 
 
 
     do {
         getline(inFile, buf);
+        if(regex_search(buf, jLineMatch, emptyRE)) {
+            cout << "empty line...\n";
+            continue;
+            }
         
         if(regex_search(buf, jLineMatch, jLineRE))
             {
             jsonID = jLineMatch.str(1);
             jsonVal = jLineMatch.str(2);
 
-            cout << "ID: " << jsonID << endl;
+            cout << "\nID: " << jsonID << endl;
             cout << "VAL: " << jsonVal << endl;
             }
 
         else {
             cout << "\nNot a valid line! \n";
+            continue;            
             }
         
-        if (regex_search(jsonVal, jIntMatch, jIntRE)) {
-            int i = stoi(jsonVal);
+        if (regex_search(jsonVal, jValMatch, jIntRE)) {
+            jInt = stoi(jsonVal);
 
-            cout << "Valid Int " << i << " matched! \n";
-            jObject->Add(jsonID, new JsonNumber(i));
+            cout << "Valid Int " << jInt << " matched! \n";
+            jObject->Add(jsonID, new JsonNumber(jInt));
             }
 
-                 
+        else if (regex_search(jsonVal, jValMatch, jStrRE)) {
+            jStr = jValMatch.str(1);
+            cout << "Valid String " << jStr << " matched! \n";
+            jObject->Add(jsonID, new JsonString(jStr));
+            }
+        else if(regex_search(jsonVal, jValMatch, jBoolorNullRE)) {           
+            if ("true" == jValMatch.str(1)) {
+                jBool = true ;         
+                cout << "Valid bool " <<  jBool << " matched! \n";
+                jObject->Add(jsonID, new JsonBoolean(jBool));
+               
+                }
+            else if ("false" == jValMatch.str(1)){
+                jBool = false ;
+                cout << "Valid bool " <<  jBool << " matched! \n";
+                jObject->Add(jsonID, new JsonBoolean(jBool));
+                }            
+           
+            else if ("null" == jValMatch.str(1)){
+                cout << "Valid null matched! \n";
+                jObject->Add(jsonID, new JsonNull());
+                }            
+            }
                 
         } while (!inFile.eof());
 		

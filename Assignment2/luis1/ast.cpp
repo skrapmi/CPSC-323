@@ -23,14 +23,18 @@ void JsonObject::Add(std::string name, JsonValue* addVal){
   addVal->Print();
   cout << endl;
 
+  
   pairs.insert( std::pair<string, JsonValue*>(name, addVal) );
 
   // Test code to see what is in the map
   cout << "map contains:\n";
   std::map<string, JsonValue*>::iterator it = pairs.begin();
-  for (it = pairs.begin(); it !=pairs.end(); ++it)
-    cout << it->first << " => " << it->second << " | ";
- 
+  for (it = pairs.begin(); it !=pairs.end(); ++it) {
+    pVal = it->second;    
+    cout << it->first << " => ";
+    it->second->Print(); 
+    cout << " | ";
+    }
   cout << endl;
 }
 
@@ -58,6 +62,7 @@ void JsonArray::Print(){
 }
 void JsonString::Print(){
 	//print object string
+    cout << value;
 }
 
 void JsonNumber::Print(){
@@ -67,7 +72,12 @@ void JsonNumber::Print(){
 
 void JsonBoolean::Print(){
 	//print object boolean
+    (value) ? cout << "true" : cout << "false";
 }
 
+void JsonNull::Print(){
+	//print object number
+    cout << "null";
+}
 
 
