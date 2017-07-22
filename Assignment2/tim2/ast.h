@@ -68,6 +68,5 @@ class JsonNull : public JsonValue
         virtual void Print();
 };
 
-//void Print() : public JsonValue{};
 
 #endif // AST_H_

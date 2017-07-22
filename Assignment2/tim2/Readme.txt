@@ -71,8 +71,3 @@ do {
 =======
 Assignment 2 : JSON Parser
 Members: Tim, Luis, Stephen
-
-Description:
-
-Instructions:
->>>>>>> 3cf2457ade873d266b6aa07dba9163c0df514f12
