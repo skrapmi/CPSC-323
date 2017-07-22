@@ -61,22 +61,21 @@ void parseADT(ifstream &file){
 	
 	regex storageStart(R"(\s*(\{))");
 	regex storageEnd(R"(\s*(\}))");
-	regex lbl(R"(\s*\x22(\w+)\x22:)");
-	regex str(R"(\s*\x22(\w+)\x22,*)");
-	regex num(R"(\s*(\d+),*\s*)");		
-	regex bol(R"(\s*(\w+),*\s*)");
+	regex lbl(R"(\s*\x22(\w+)\x22\s*:)");
+	regex str(R"(\s*\x22(\w+)\x22\s*,*)");
+	regex num(R"(\s*(\d+)\W+)");		
+	regex bol(R"(\s+(\w+)\W+)");
 	
-	smatch strMatch;
+	
 	smatch lblMatch;
-
+	smatch storMatch;
 
 	JsonObject*  o = new JsonObject();  //Pointer to JsonObject - String, Number, Boolean, Null or Array
 	JsonArray*   a = new JsonArray();	//Pointer to JsonArray
-	JsonValue**  v = NULL; 				//Pointer to a Pointer of JsonObject
 	
 	try{
 		getline(file, buf);
-		regex_search(buf, strMatch, storageStart);
+		regex_search(buf, storMatch, storageStart);
 		lineNum++;
 	}
 	catch(regex_error& e){
@@ -87,68 +86,110 @@ void parseADT(ifstream &file){
 	char c;
 	char parseArray[1024];
 	int  parseInt = 0;
-	parseArray[0] = '\n';
+	string labelHold;
+	parseArray[0] = 0x00;
 
 	while(file.get(c)){
+		smatch strMatch;
 		if(c == '\n'){
+			lineNum++;
+			parseInt = 0;
+			checkLine = true;
 			/*if(parseInt != 0){
 				cout << "Parse Error at " << lineNum << ":" << parseInt <<  endl;
 				exit(1);
 			}*/
-			lineNum++;
-			parseInt = 0;
-			checkLine = true;
 		}
 		else if(c == '['){
 			isArrayType = true;	
-			parseInt = 0;	
+			parseInt = 0;
 		}
 		else if(c == '}'){
 			cout << "File parsing complete!" << endl;
 			break;
 		}
 		else if(c == ']'){
+			if(isArrayType)
+				o->Add(lblMatch.str(1),a);
 			isArrayClosed = true;
-			parseInt = 0;
+			isArrayType = false;
 			checkLine = false;
+			parseInt = 0;
 		}
 		else if(checkLine){		//skips processing until next line of file, if false
 			parseArray[parseInt++] = c;
-			parseArray[parseInt] = NULL;  //Causes error in -Wall '\n' didn't work right
+			parseArray[parseInt] = 0x00;  //Null terminated char array
 			string parseStr(parseArray);
-			cout << parseInt << " " << parseStr << endl;
+			//cout << parseInt << " " << parseStr << endl;
 			if(!isLabelType && !isArrayType){
 				if(regex_search(parseStr, lblMatch, lbl)){
-					//cout << lblMatch.str(1);  //error checking
+					labelHold = lblMatch.str(1);
+					//cout << "Labal found " << lblMatch.str(1) << endl;  //error checking
 					parseInt = 0;
 					isLabelType = true;
 				}
 			}
 			else{
+				//cout << lblMatch.str(1) << endl;
 				if(regex_search(parseStr, strMatch, str)){
+					//cout << lblMatch.str(1) << "found string " << strMatch.str(1) << endl;
+					if(isLabelType && !isArrayType){
+						o->Add(labelHold,new JsonString(strMatch.str(1))); 
+						checkLine = false;
+						isLabelType = false;
+					}
+					else
+						a->Add(new JsonString(strMatch.str(1))); 
+					
 					parseInt = 0;
-					//*v = new JsonString(strMatch.str(1));  	//causing segment fault unknown why
-					cout << "found string " << strMatch.str(1) << endl;
 				}
 				else if(regex_search(parseStr, strMatch, num)){
-					*v = new JsonNumber(stoi(strMatch.str(1)));
 					parseInt = 0;
+					//cout << "found number " << stoi(strMatch.str(1)) << endl;
+					if(isLabelType && !isArrayType){
+						o->Add(labelHold,new JsonNumber(stoi(strMatch.str(1))));
+						checkLine = false;
+						isLabelType = false;
+					}
+					else
+						a->Add(new JsonNumber(stoi(strMatch.str(1))));					
 				}
 				else if(regex_search(parseStr, strMatch, bol)){
-					if(strMatch.str(1) == "true")
-						*v = new JsonBoolean(true);
-					else if(strMatch.str(1) == "false")
-						*v = new JsonBoolean(false);
-					else if(strMatch.str(1) == "null")
-						cout << "NULL should happen " << endl; //*v = new JsonNull();
-					else{
-						cout << "Parse error: expect true, false, or null at " << lineNum << ":" << parseInt << endl;
-						exit(1);
-					}
 					parseInt = 0;
+					//cout << "found bool " << strMatch.str(1) << endl;
+					
+					if(strMatch.str(1) == "true"){
+						if(isLabelType && !isArrayType){
+							o->Add(labelHold,new JsonBoolean(true));
+							checkLine = false;
+							isLabelType = false;
+						}
+						else
+							a->Add(new JsonBoolean(true));
+					}
+					else if(strMatch.str(1) == "false"){
+						if(isLabelType && !isArrayType){
+							o->Add(labelHold,new JsonBoolean(false));
+							checkLine = false;
+							isLabelType = false;
+						}
+						else
+							a->Add(new JsonBoolean(false));
+					}
+					else if(strMatch.str(1) == "null"){
+						if(isLabelType){
+							o->Add(labelHold,new JsonNull());
+							checkLine = false;
+							isLabelType = false;
+						}
+						else{
+							cout << "Parse error: expect true, false, or null at " << lineNum << ":" << parseInt << endl;
+							exit(1);
+						}
+					}
 				}
 			}
-			if(isArrayClosed && isLabelType){
+			/*if(isArrayClosed && isLabelType){
 				o->Add(lblMatch.str(1), a);
 				checkLine = false;
 				isLabelType = false;
@@ -162,7 +203,8 @@ void parseADT(ifstream &file){
 				*v = NULL;
 				checkLine = false;
 				isLabelType = false;
-			}		
+			}*/		
+			
 		}
 	}
 	if(isLabelType)
