@@ -3,8 +3,8 @@
     "index" : 54,
     "count" : 32,
     "year" : 1989,
-
+    "arr": [ "bar", 456, false ],
     "name" : "Luis",
     "isBool" : true,
-    "nothing" : null, 
+    "nothing" : null
 }

@@ -44,9 +44,9 @@ int main(int argc, char *argv[0]) {
   		}
 
 	regex	objectRE("");
-	regex 	arrayRE("");
+	regex 	arrayRE(R"(\[(.+)\])") ;   //\[(((\b\w+\b)\s*,)+)\])");
     regex   emptyRE(R"(^\s*$)");
-	regex   jLineRE(R"(\x22(\w+)\x22\s*: ([^,]*),)");
+	regex   jLineRE(R"(\x22(\w+)\x22\s*: (.*),?)");
 	regex   jIntRE(R"(\s*(\d+),?)");	
     regex   jStrRE(R"(\s*\x22(\w+)\x22\s*,?)");
     regex   jBoolorNullRE(R"(\s*(\w+),?)");
@@ -95,13 +95,19 @@ int main(int argc, char *argv[0]) {
             continue;            
             }
         
-        if (regex_search(jsonVal, jValMatch, jIntRE)) {
+
+
+        if (regex_search(jsonVal, jValMatch, arrayRE)) {
+            cout << "Array of size matched!\n";
+            
+            }
+            
+        else if (regex_search(jsonVal, jValMatch, jIntRE)) {
             jInt = stoi(jsonVal);
 
             cout << "Valid Int " << jInt << " matched! \n";
             jObject->Add(jsonID, new JsonNumber(jInt));
-            }
-
+            }    
         else if (regex_search(jsonVal, jValMatch, jStrRE)) {
             jStr = jValMatch.str(1);
             cout << "Valid String " << jStr << " matched! \n";
@@ -125,9 +131,10 @@ int main(int argc, char *argv[0]) {
                 jObject->Add(jsonID, new JsonNull());
                 }            
             }
-                
+
         } while (!inFile.eof());
 		
-	
+	cout << endl << endl ;
+    jObject->Print();
 	return 0;
 }
