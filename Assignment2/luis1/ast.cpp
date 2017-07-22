@@ -19,44 +19,26 @@ using namespace std;
 
 void JsonObject::Add(std::string name, JsonValue* addVal){
   // Insert values into the map
-  cout << "\nadding: ";
-  addVal->Print();
-  cout << endl;
-
-  
   pairs.insert( std::pair<string, JsonValue*>(name, addVal) );
 
-  // Test code to see what is in the map
-  cout << "map contains:\n";
-  std::map<string, JsonValue*>::iterator it = pairs.begin();
-  for (it = pairs.begin(); it !=pairs.end(); ++it) {   
-    cout << it->first << " => ";
-    it->second->Print(); 
-    cout << " | ";
-    }
-  cout << endl;
 }
 
 void JsonArray::Add(JsonValue *v){
   // An iterator that points to the list
   std::list<JsonValue *>::iterator it;
   it = values.begin();
-  
+
+
   // Insert values into the array
   values.insert(it, v);
 
-  // Test code to see what is in the array
-  cout << "list contains:\n";
-  for (it = values.begin(); it != values.end(); ++it)
-    cout << " " << *it;
-  cout << "\n";
 }
 
 void JsonObject::Print(){
 	//need to call print from other object parts
   
   std::map<string, JsonValue*>::iterator it = pairs.begin();
-  cout << "( object ( ";
+  cout << "( object( ";
   for (it = pairs.begin(); it !=pairs.end(); ++it) {   
     cout << it->first << " " ;
     it->second->Print(); 
@@ -66,27 +48,34 @@ void JsonObject::Print(){
 
 void JsonArray::Print(){
 	//need to run a print for all parts of array	
+  // An iterator that points to the list
+  std::list<JsonValue *>::iterator it;
+  it = values.begin();
+
+  for (it = values.begin(); it != values.end(); ++it){
+    cout << "( " << *it << " ) "; 
+    }
 }
 void JsonString::Print(){
 	//print object string
-    cout <<  " string ( " << value << " ) ";
+    cout <<  " (string  " << value << ") ";
 }
 
 void JsonNumber::Print(){
 	//print object number
-    cout << "( number " << value << " ) ";
+    cout << "(number " << value << ") ";
 }
 
 void JsonBoolean::Print(){
 	//print object boolean
-    cout << "( boolean ";
+    cout << "(boolean ";
     (value) ? cout << "true" : cout << "false";
-    cout << " ) ";
+    cout << ") ";
 }
 
 void JsonNull::Print(){
 	//print object number
-    cout << "( null ) ";
+    cout << "(null) ";
 }
 
 

@@ -43,8 +43,9 @@ int main(int argc, char *argv[0]) {
     	cout << "File opened successfully.\n\n";
   		}
 
-	regex	objectRE("");
-	regex 	arrayRE(R"(\[(.+)\])") ;   //\[(((\b\w+\b)\s*,)+)\])");
+	regex	openBraceRE(R"(\s*[\{\[])");
+    regex   closeBraceRE(R"(\s*[\}\]])");
+	regex 	arrayRE(R"(\[(.+)\])") ;
     regex   emptyRE(R"(^\s*$)");
 	regex   jLineRE(R"(\x22(\w+)\x22\s*: (.*),?)");
 	regex   jIntRE(R"(\s*(\d+),?)");	
@@ -66,10 +67,11 @@ int main(int argc, char *argv[0]) {
     bool    jBool;
     string  jNull = "null";    
 
-	bool	isObjectOrArray;
-	bool    isValidLine;
-    		
-    JsonObject* 	jObject = new JsonObject();
+    bool    openBraceNotFound = true;
+	bool    closeBraceNotFound = true;    
+    
+    JsonObject* 	jObject = new JsonObject();      
+    JsonArray *     jArray = new JsonArray();
 
 
 
@@ -80,26 +82,36 @@ int main(int argc, char *argv[0]) {
             cout << "empty line...\n";
             continue;
             }
-        
+        if(regex_search(buf, jLineMatch, openBraceRE)) {
+            openBraceNotFound = false;            
+                  
+            continue;            
+            }
+        if (openBraceNotFound) {
+            cout <<"ERROR expected {...\n";
+            exit(1);
+            }
+            
+        if(regex_search(buf, jLineMatch, closeBraceRE)) {
+            break; 
+            }
         if(regex_search(buf, jLineMatch, jLineRE))
             {
             jsonID = jLineMatch.str(1);
             jsonVal = jLineMatch.str(2);
-
-            cout << "\nID: " << jsonID << endl;
-            cout << "VAL: " << jsonVal << endl;
             }
 
         else {
-            cout << "\nNot a valid line! \n";
+            cout << "\nERROR: Not a valid line! \n";
             continue;            
             }
         
 
 
         if (regex_search(jsonVal, jValMatch, arrayRE)) {
-            cout << "Array of size matched!\n";
-            
+            cout << "Array matched!\n";
+            jArray->Add(new JsonString(jLineMatch.str(1)));
+            jObject->Add(jsonID, jArray);
             }
             
         else if (regex_search(jsonVal, jValMatch, jIntRE)) {
@@ -132,8 +144,9 @@ int main(int argc, char *argv[0]) {
                 }            
             }
 
-        } while (!inFile.eof());
-		
+        } while (!inFile.eof() && closeBraceNotFound);
+
+
 	cout << endl << endl ;
     jObject->Print();
 	return 0;
