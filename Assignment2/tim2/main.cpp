@@ -45,12 +45,16 @@ int main(int argc, char *argv[0]) {
     cout << "File opened successfully.\n\n";
   }
 
-	parseADT(inFile);
+  parseADT(inFile);
 
 return 0;
 }
-
-
+/******************************************************************
+ * Function: Parse the JSON file and call Print to output         *
+ * Input:   file Stream of JSON file                              *
+ * Output:  Output to the display console                         *
+ * 						                                          *
+ *****************************************************************/
 void parseADT(ifstream &file){
 	int 	lineNum = 1;
 	string  buf;
@@ -58,7 +62,7 @@ void parseADT(ifstream &file){
 	bool	isArrayClosed = false;
 	bool	isLabel = false;
 	bool	checkLine	= true;
-	
+	//RE's for token/value matching
 	regex storageStart(R"(\s*(\{))");
 	regex storageEnd(R"(\s*(\}))");
 	regex lbl(R"(\s+\x22(\w+)\x22:)");
@@ -66,9 +70,11 @@ void parseADT(ifstream &file){
 	regex num(R"(\s+(\d+)\W+)");	
 	regex bol(R"(\s+(\w+)\W+)"); 	
 	
+	//RE's return storage
 	smatch lblMatch;
 	smatch storMatch;
-
+	
+	//Output structure for JSON file
 	JsonObject*  o = new JsonObject();  //Pointer to JsonObject - String, Number, Boolean, Null 
 	JsonArray*   a = new JsonArray();	//Pointer to JsonArray  - Array of String, Number, Null 
 	
@@ -93,6 +99,7 @@ void parseADT(ifstream &file){
 	string labelHold;		//temp storeage
 	parseArray[0] = 0x00;
 
+	//Loop to check the input stream in a shift and convert style
 	while(file.get(c)){
 		smatch strMatch;
 		if(c == '\n'){
