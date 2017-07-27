@@ -1,0 +1,203 @@
+Class: CS-323 : Compilers
+Date:  July 27, 2017
+
+****************************************************
+
+Currying
+
+(a function, plus)
+
+(define plus
+  (lambda (a b) // function that takes two arguments
+    (+ a b)))
+
+// function gives
+(plus 2 3) => 5
+
+*************************
+instead..
+
+(Curried function, plus)
+
+(define plus
+  (lambda (a)   // bind the parameters one at a time
+    (lambda (b)
+      (+ a b))))
+
+// function gives
+((plus 2) 3)   // binds a to 2 first
+****************************************************
+
+Vocab Term
+- partially applied function
+
+****************************************************
+OCaml
+
+[ 1 ; 2 ; 3 ] // list in OCaml
+
+Example 1:
+#let plus (a, b) = a + b;;
+// let statement in OCaml
+// one argument (a, b), a tuple
+
+val plus : (int * int)->int = <fun>
+// where '*' is the Cartesian Product
+//   reads any int combined with any other int
+// tuples are defined with parentheses
+// return value is an int, not a tuple
+
+Example 2:
+#2 + 3;;
+
+val it :int = 5
+// 'it' = value name; ':int' = type
+
+Example 3: (Curried)
+#let plus a = fun b -> a + b;;
+// fun == lambda in OCaml : (fun b -> a + b) is a lambda expression
+// '->' is for fun (lambda syntax)
+// '=' binds plus with the RHS
+
+val plus : int->(int->int)
+// Output: int->int->int (no parentheses; they are implied)
+
+Example 4: (Simple Curried)
+#let plus a b = a + b;;
+
+val plus : int->int->int = <fun>
+// All functions are implicitly curried in OCaml
+
+#plus 2 3
+val it :int = 5
+
+#plus 2
+val it : int->int = <fun>
+
+*********************************************************
+Javascript
+
+function plus(a) {
+  return function(b) {
+    return a + b;
+  }
+}
+
+// End generic functional programming talk
+
+*********************************************************
+
+Scheme Details
+- '(1 2 3)     // means "don't evaluate this"
+- quote(1 2 3) // . . . .
+
+(+ 1 2) => 3         // Outputs: 3
+'(+ 1 2) => (+ 1 2)  // Outputs a list
+(eval '(+ 1 2)) => 3 // eval is a Scheme interpreter
+
+(define a 2)
+(+ a 1)) => 3
+a => 2
+'a => a(<--- symbol or atom : effectively a pointer)
+'aardvark => aardvark
+#t => #t   // Boolean
+#f => #f
+
+// Scheme if-else
+(if condition
+  (fn-true)
+  (fn-false))
+
+(if condition1
+  (if condition2
+    (action1)
+    (action2))
+  (action3)))
+
+// Scheme switch-case
+(cond
+  ( (condition1) (action1) )
+  ( (condition2) (action2) )
+  ( (condition3) (action3) )
+  ( . . . . )
+  ( else (action_default) ))
+
+// Scheme begin
+(begin
+  (expr1)
+  (expr2)
+  . . .
+  (expr_last))
+// returns value the last function returned => value of (expr_last)
+// why not just call (expr_last)? because side effects
+
+**************************************************************
+
+OCaml Details
+- type variables
+
+#let identity thing = thing;;   // takes a value and returns itself
+val identity : 'a -> 'a         // type is any type mapped to that type
+
+#let first one two = one;;
+val first : 'a -> 'b -> 'a      // takes two types and returns value of 1st
+
+#first 1 "str"
+val it : int = 1                // return value
+
+#first "str" 1
+val it : string = "str"         // return value
+
+#let second one two = two;;
+val second : 'a -> 'b -> 'b     // takes two types and returns value of 2nd
+
+#let incr a = a + 1;;
+
+#let zero = 0;;   // this is an integer
+#let zero() = 0;; // this is a function
+val zero : () -> int // maps nothing to an int
+// "()" called unit : means nothing getting passed or no return type
+
+#let plus a b = a + b;;
+val plus : int->int->int
+a + b   // integer addition
+a +. b  // floating_point addition
+
+// Records (in OCaml)
+type person = {         // kinda like a struct in C++
+
+  first_name : string,
+  last_name  : string
+
+};;
+
+// Variants   // kinda like a union in C++
+type signal =
+  |Red
+  |Gree
+  |Yellow;;
+
+type person =
+  |Student of string * string * float
+  |Faculty of string * string * string;;
+
+// Student and Faculty both have type 'person'
+
+Student ("Student", "One", 3.8)
+Faculty ("Faculty", "Two", "Dr.")
+
+// C++
+struct foo {
+
+  int i;
+  char c;
+
+};
+
+// C++
+union foo {
+
+  int i;
+  char c;
+
+};
