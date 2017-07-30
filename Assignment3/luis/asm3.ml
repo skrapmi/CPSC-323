@@ -22,24 +22,48 @@ and stmt =
 and program = Program of stmt list ;;
 
 
+let rec getdt = function
+  |Void -> "void"
+  |Int -> "int"
+;; 
+
+let varEval = function
+    Var (vId, dt) ->  
+      Printf.printf "%s of type %s " vId (getdt dt)  
+;;
 
 
-let startP prgm = match prgm with 
+let rec expEval = function
+  |Value vVar -> Printf.printf "value " ; varEval vVar;
+  | Call (cf, cargs) -> Printf.printf "call ";
+      let funcEval = function
+          Func (fid, fdta, fdtb) -> 
+            Printf.printf "%s takes %s returns %s " fid (getdt fdta) (getdt fdtb)
+      in funcEval cf ; 
+        Printf.printf "with args ";
+        let rec argsEval = function
+          |[] -> ()
+          |h::t -> expEval h ; argsEval t 
+        in argsEval cargs
+  | Neq (ne, ne2) -> expEval ne ; Printf.printf "!= "; expEval ne2  
+  |Gt (ge, ge2) -> expEval ge; Printf.printf " > "; expEval ge2
+  |Minus (me, me2) -> expEval me; Printf.printf "minus "; expEval me2
+;;
+
+
+let startP = function
     Program stmtList -> 
-      let rec trav sList = match sList with
-        |[] -> print_endline "done traversing!"
-        | Assign(aVar, aExp)::t -> print_endline "assignment!" ;trav t
-        | Expr eExp::t -> print_endline "expression!" ;
-            let rec expEval e = match e with
-              |Value v -> print_endline "value" 
-              | Call (f, ags) -> print_endline "call"
-              | Neq (ne, ne2) -> print_endline "neq" 
-              |Gt (ge, ge2) -> print_endline "Gt"
-              |Minus (me, me2) -> print_endline "Minus"
-            in expEval eExp
-             ; trav t 
-        | While (wExp, wList)::t -> print_endline "while!"; trav t
-        | If (iExp, iLista, iListb)::t -> print_endline "if!"; trav t
+      let rec trav = function
+        | [] -> ()
+        | Assign(aVar, aExp)::t -> Printf.printf "assign " ; varEval aVar; 
+            Printf.printf"to "; expEval aExp; print_newline(); trav t
+        | Expr eExp::t -> Printf.printf "expression: " ; expEval eExp; 
+            print_newline() ; trav t 
+        | While (wExp, wList)::t -> Printf.printf "while "; expEval wExp;
+            Printf.printf "\n  do: "; trav wList; trav t
+        | If (iExp, iLista, iListb)::t -> Printf.printf "if "; expEval iExp;
+            Printf.printf "\n  then: "; trav iLista; 
+            Printf.printf "  else: "; trav iListb;  trav t
       in trav stmtList
 ;;
 
