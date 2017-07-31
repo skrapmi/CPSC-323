@@ -28,26 +28,30 @@ let rec getdt = function
 ;; 
 
 let varEval = function
-    Var (vId, dt) ->  
-      Printf.printf "var %s of type %s " vId (getdt dt)  
+    Var (vId, dt) ->  Printf.printf "%s" vId
 ;;
 
 
 let rec expEval = function
-  |Value vVar -> Printf.printf "value " ; varEval vVar;
-  | Call (cf, cargs) -> Printf.printf "call ";
+  |Value vVar -> varEval vVar 
+  | Call (cf, cargs) -> 
       let funcEval = function
-          Func (fid, fdta, fdtb) -> 
-            Printf.printf "%s takes %s returns %s " fid (getdt fdta) (getdt fdtb)
-      in funcEval cf ; 
-        Printf.printf "with args ";
-        let rec argsEval = function
+          Func (fid, fdta, fdtb) -> match fid with
+          |"getint" -> Printf.printf "\na1 := &input\ncall %s\n" fid
+          |"putint" -> Printf.printf "\na1 := &output\ncall %s\n" fid
+          | _ -> Printf.printf "%s is not a valid function call...\n" fid
+
+      in funcEval cf ;
+        (*Printf.printf "with args ";
+          let rec argsEval = function
           |[] -> ()
           |h::t -> expEval h ; argsEval t 
-        in argsEval cargs
-  | Neq (ne, ne2) -> expEval ne ; Printf.printf "!= "; expEval ne2  
-  |Gt (ge, ge2) -> expEval ge; Printf.printf " > "; expEval ge2
-  |Minus (me, me2) -> expEval me; Printf.printf "minus "; expEval me2
+          in argsEval cargs *)
+  | Neq (ne, ne2) -> Printf.printf "r1: = "; expEval ne ;
+      Printf.printf "\nr2 := "; expEval ne2; 
+      Printf.printf "\nr1 := r1 != r2\n if r1 goto L3\n";
+  |Gt (ge, ge2) -> expEval ge; Printf.printf " > "; expEval ge2; 
+  |Minus (me, me2) -> expEval me; Printf.printf "minus "; expEval me2; 
 ;;
 
 
@@ -55,16 +59,15 @@ let startP = function
     Program stmtList -> 
       let rec trav = function
         | [] -> ()
-        | Assign(aVar, aExp)::t -> Printf.printf "assign " ; varEval aVar; 
-            Printf.printf"to "; expEval aExp; print_newline(); trav t
-        | Expr eExp::t -> Printf.printf "expression: " ; expEval eExp; 
-            print_newline() ; trav t 
+        | Assign(aVar, aExp)::t -> expEval aExp;
+            (varEval aVar); Printf.printf" := r1 \n"  ; trav t
+        | Expr eExp::t ->  expEval eExp; trav t
         | While (wExp, wList)::t -> Printf.printf "while "; expEval wExp;
             Printf.printf "\n  do: "; trav wList; trav t
-        | If (iExp, iLista, iListb)::t -> Printf.printf "if "; expEval iExp;
-            Printf.printf "\n  then: "; trav iLista; 
-            Printf.printf "  else: "; trav iListb;  trav t
-      in trav stmtList
+        | If (ifExp, thenList, elseList)::t -> Printf.printf "L2: "; 
+            expEval ifExp; trav t
+      in trav stmtList;
+        Printf.printf "a1 := &output\ncall writeln\ngoto exit\n"
 ;;
 
 
@@ -82,7 +85,6 @@ startP (Program
                                        Value (Var ("i", Int))))])]);
            Expr (Call (Func ("putint", Int, Void), 
                        [Value (Var ("i", Int))]))] );;
-
 
 
 
