@@ -1,6 +1,5 @@
 (* Project: Assignment 3 
    Members: Luis Gonzalez, Timothy Parks, Stephen Cordasco
-
 *)
 
 type id = string
@@ -19,7 +18,18 @@ and stmt =
     | Expr of expr
     | While of expr * stmt list
     | If of expr * stmt list * stmt list
-and program = Program of stmt list ;;
+and program = Program of stmt list ;; 
+
+class registers = object
+  val mutable r = ["r1"; "r2"; "r3"; "r4"; "r5"]
+  method nextreg = match r with
+    | [] -> ""
+    |h::t -> (r <- (t @ [h])); h
+  method doneWregs = 
+    r <- (List.sort compare r);
+end;;
+
+let reg = new registers;;
 
 
 let rec getdt = function
@@ -28,75 +38,122 @@ let rec getdt = function
 ;; 
 
 let varEval = function
-    Var (vId, dt) ->  Printf.printf "%s" vId
+    Var (vId, dt) ->  print_string vId
 ;;
 
 
-let rec expEval = function
-  |Value vVar -> varEval vVar 
-  | Call (cf, cargs) -> 
-      let funcEval = function
-          Func (fid, fdta, fdtb) -> match fid with
-          |"getint" -> Printf.printf "a1 := &input\ncall readint\n" 
-          |"putint" -> Printf.printf "a1 := &output\n";
-              Printf.printf "r1 := ";
-              let argsEval = function
-                |[] -> Printf.printf "expected int argument...\n"
-                |h::_ -> expEval h ;
-              in argsEval cargs; 
-                Printf.printf "\na2 = r1\n"; 
-                Printf.printf "call writeint\n";
-          | _ -> Printf.printf "%s is not a valid function call...\n" fid
-      in funcEval cf ;
-  | Neq (ne, ne2) -> Printf.printf "\nr1: = "; expEval ne ;
-      Printf.printf "\nr2 := "; expEval ne2; 
-      Printf.printf "\nr1 := r1 != r2\n";
-  |Gt (ge, ge2) -> Printf.printf "r1 := "; expEval ge; 
-      Printf.printf"\nr2 := "; expEval ge2; Printf.printf "\nr1 = r1 > r2\n";
-      expEval ge2; Printf.printf " := r1\n"
-  |Minus (me, me2) -> Printf.printf "r1 := "; expEval me; 
-      Printf.printf"\nr2 := "; expEval me2; Printf.printf "\nr1 = r1 - r2\n";
+let expEval  e  = 
+  let r1 = reg#nextreg in 
+  let r2 = reg#nextreg in
+  let rec exprec = function
+    |Value vVar -> varEval vVar 
+    | Call (cf, cargs) -> 
+        let funcEval = function
+            Func (fid, fdta, fdtb) -> match fid with
+            |"getint" -> 
+                Printf.printf "a1 := &input\ncall readint\n";
+            |"putint" -> 
+                Printf.printf "a1 := &output\n";
+                Printf.printf "%s := " r1;
+                let rec getArgs = function
+                  |[] -> ()
+                  | h::t -> exprec h; getArgs t; 
+                in getArgs cargs;  print_newline();
+                  Printf.printf "a2 = %s \ncall writeint\n" r1
+            | _ -> () ;
+        in funcEval cf ;                   
+    | Neq (ne, ne2) ->
+        Printf.printf "\n%s := " r1; exprec ne ;
+        Printf.printf "\n%s := " r2; exprec ne2 ; 
+        Printf.printf "\n%s := %s != %s\n" r1 r1 r2;
+    |Gt (ge, ge2) -> Printf.printf "%s := " r1; exprec ge ; 
+        Printf.printf"\n%s := " r2; exprec ge2 ; 
+        Printf.printf "\n%s = %s > %s\n" r1 r1 r2;
+    |Minus (me, me2) -> Printf.printf "%s := " r1; exprec me ; 
+        Printf.printf"\n%s := " r2; exprec me2; 
+        Printf.printf "\n%s = %s - %s\n" r1 r1 r2;
+  in exprec e; reg#doneWregs;
 ;;
 
 
-let startP = function
-    Program stmtList -> Printf.printf "main:\n";
-      let rec trav = function
-        | [] -> ()
-        | Assign(aVar, aExp)::t -> expEval aExp;
-            (varEval aVar); Printf.printf" := r1 \n"  ; trav t
-        | Expr eExp::t ->  expEval eExp; trav t
-        | While (wExp, wList)::t -> Printf.printf "goto L1\n";
-            Printf.printf "L2:\n";
-            trav wList;  Printf.printf "L1: "; expEval wExp; 
-            Printf.printf "if r1 goto L2\n";
-            trav t
-        | If (ifExp, thenList, elseList)::t ->  
-            expEval ifExp; Printf.printf "if r1 goto L3\n";
-            trav elseList; Printf.printf "goto L4\nL3: \n";
-            trav thenList; Printf.printf "L4:\n";
-            trav t
-      in trav stmtList;
-        Printf.printf "a1 := &output\ncall writeln\ngoto exit\n"
+let codegen ast = 
+  let r1 = reg#nextreg in
+    match ast with
+        Program stmtList -> Printf.printf "main: \n";
+          let rec trav s label = match s with
+            | [] -> ()
+            | Assign(aVar, aExp)::t -> 
+                expEval aExp ;
+                (varEval aVar); Printf.printf" := %s \n" r1;
+                trav t label
+            | Expr eExp::t ->  expEval eExp  ; 
+                trav t label
+            | While (wExp, wList)::t -> 
+                Printf.printf "goto L%d\n" label;
+                Printf.printf "L%d:\n" (label + 1); 
+                trav wList (label + 2);  
+                Printf.printf "L%d: " label; expEval wExp ; 
+                Printf.printf "if %s goto L%d\n" r1 (label + 1); 
+                trav t label
+            | If (ifExp, thenList, elseList)::t ->  
+                expEval ifExp ; 
+                Printf.printf "if %s goto L%d\n" r1 label; 
+                trav elseList label; 
+                Printf.printf "goto L%d\n" (label + 1); 
+                Printf.printf "L%d:\n" (label);
+                trav thenList label; 
+                Printf.printf "L%d:\n" (label + 1); 
+                trav t (label + 2)
+          in trav stmtList 1; reg#doneWregs;
+            Printf.printf "a1 := &output\ncall writeln\ngoto exit\n"
 ;;
 
 
 
-startP (Program
-          [Assign (Var ("i", Int), Call (Func ("getint", Void, Int), []));
-           Assign (Var ("j", Int), Call (Func ("getint", Void, Int), []));
-           While (Neq (Value (Var ("i", Int)), Value (Var ("j", Int))),
-                  [If (Gt (Value (Var ("i", Int)), Value (Var ("j", Int))),
-                       [Assign (Var ("i", Int),
-                                Minus (Value (Var ("i", Int)), 
-                                       Value (Var ("j", Int))))],
-                       [Assign (Var ("j", Int),
-                                Minus (Value (Var ("j", Int)), 
-                                       Value (Var ("i", Int))))])]);
-           Expr (Call (Func ("putint", Int, Void), 
-                       [Value (Var ("i", Int))]))] );;
+codegen 
+  (Program
+     [Assign (Var ("i", Int), Call (Func ("getint", Void, Int), []));
+      Assign (Var ("j", Int), Call (Func ("getint", Void, Int), []));
+      While (Neq (Value (Var ("i", Int)), Value (Var ("j", Int))),
+             [If (Gt (Value (Var ("i", Int)), Value (Var ("j", Int))),
+                  [Assign (Var ("i", Int),
+                           Minus (Value (Var ("i", Int)), 
+                                  Value (Var ("j", Int))))],
+                  [Assign (Var ("j", Int),
+                           Minus (Value (Var ("j", Int)), 
+                                  Value (Var ("i", Int))))])]);
+      Expr (Call (Func ("putint", Int, Void), [Value (Var ("i", Int))]))]);;
 
 
+
+(*
+(Program
+[If (Gt (Value (Var ("i", Int)), Value (Var ("j", Int))),
+[Assign (Var ("i", Int),
+Minus (Value (Var ("i", Int)), 
+Value (Var ("j", Int))))],
+[Assign (Var ("j", Int),
+Minus (Value (Var ("j", Int)), 
+Value (Var ("i", Int))))]);
+If (Gt (Value (Var ("i", Int)), Value (Var ("j", Int))),
+[Assign (Var ("i", Int),
+Minus (Value (Var ("i", Int)), 
+Value (Var ("j", Int))))],
+[Assign (Var ("j", Int),
+Minus (Value (Var ("j", Int)), 
+Value (Var ("i", Int))))]);
+While (Neq (Value (Var ("i", Int)), Value (Var ("j", Int))),
+[If (Gt (Value (Var ("i", Int)), Value (Var ("j", Int))),
+[Assign (Var ("i", Int),
+Minus (Value (Var ("i", Int)), 
+Value (Var ("j", Int))))],
+[Assign (Var ("j", Int),
+Minus (Value (Var ("j", Int)), 
+Value (Var ("i", Int))))])])])
+;;
+
+
+*)
 
 
 

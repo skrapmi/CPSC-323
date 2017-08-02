@@ -15,10 +15,12 @@ lastTwo myList
 let rec at k t =
   match t with
     | [] -> None
-    | h :: t -> if k = 1 then Some h else at (k-1) t;;
+    | h :: t -> match k with
+      |1 -> Some h 
+      | _ -> at (k-1) t;;
 
 
-at 3 myList
+at 10 myList
 
 let length xList = 
   let rec lengthHelper n t =
