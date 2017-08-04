@@ -22,12 +22,12 @@ and stmt =
 and program = Program of stmt list ;; 
 
 (*
-* Class      : Register 
-* Variable   : rlist -  list that holds all the register 
-* function  : nextreg - returns  the next available register
-*			 It does it by rotating the list and assigns it to rlist
-*			 then returning the the origanal head of the list
-* function  : doneWreg - sorts the list and asigns it to rlist after registers are used
+* Class    : Register 
+* Variable : rlist -  list that holds all the register 
+* function : nextreg - returns  the next available register
+*			   It does it by rotating the list and assigns it to rlist
+*			   then returning the the origanal head of the list
+* function : doneWreg - sorts the list and asigns it to rlist after registers are used
 *			   at the end of a function or block
 *)
 class registers = object
@@ -53,12 +53,12 @@ let varEval = function
     Var (vId, dt) ->  print_string vId
 ;;
 (*
-* function :  expEval - evaluates an expression , only needs two 
-*			regesters r1, r2 
-*			it evalaluates by pattern matching with variant types 
+* function : expEval - evaluates an expression , only needs two 
+*				regesters r1, r2 
+*				it evalaluates by pattern matching with variant types 
 *		        with exprec function
-* variant : Value - calls varEval
-* variant : Call - first matches with the function identifier with funcEval 
+* variant  : Value - calls varEval
+* variant  : Call - first matches with the function identifier with funcEval 
 *		  function 
 *		  if "getint" then its a simple print
 *		  if "putint" first print some instructions then print 
