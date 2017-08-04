@@ -58,10 +58,11 @@ let varEval = function
 *			it evalaluates by pattern matching with variant types 
 *		        with exprec function
 * variant : Value - calls varEval
-* variant : Call - first matches with the function identifier with funcEval function 
+* variant : Call - first matches with the function identifier with funcEval 
+*		  function 
 *		  if "getint" then its a simple print
-*		  if "putint" first prints some instructions then prints instructions 
-*			     involvint arguments with the getArgs function
+*		  if "putint" first print some instructions then print 
+*		  instructions involving arguments with the getArgs function
 * variants : Neq, GT, Minus - all have simple prints for instructions
 *)
 let expEval  e  = 
@@ -99,22 +100,27 @@ let expEval  e  =
 
 (*
 * function : codegen  - matches ast with variants in program 
-*			  [needs one register]  r1
+*			  needs one register [r1]
 * variant : Program - matches statement list with call to trav function 
 *			with paramaters list of statement
 *		        and integer label with intial value 
 *		       of 1. Only while and if use labels
 * variant : Assign - 1. evaluate the right hand side [rhs] expression  
-*		     2. print the variables. If its a function call print 
-*		     special variable rv
+*		     2. print the variables
+*		     3. If its a function call print special variable rv
+*		     4. make recursive call with tail and same label
 * variant : Expr - call expEval and send expression te be evaluated
-* variant : While - 1. print "goto <label>" then the next label.
-*		   2. print the body of the while which is mad up of 
-*			  a list of statements
+* variant : While - uses two labels 
+*		   1. print "goto <label>" then the next label.
+*		   2. print the body of the while which is made up of 
+*		      a list of statements
 *		   3. print the boolean expression 
-* variant : If - 1. print the boolean expression
+*		   4. make recursive call with tail and label + 2
+* variant : If - uses two labels
+*		 1. print the boolean expression
 *		 2. print the the else part
 *		 3. print the body of the if statement
+*		 4. make recursive call with tail and label + 2
 *)
 let codegen ast = 
   let r1 = reg#nextreg in
